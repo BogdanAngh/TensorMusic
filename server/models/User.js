@@ -20,8 +20,10 @@ const userSchema = new Schema({
     },
     date: {
         type: Date,
-        default: Date.now
+        default: (Date.now() + 72000000)
     }
 });
 
-mongoose.model('users', userSchema);
+const User = mongoose.model('users', userSchema);
+
+module.exports = User;
