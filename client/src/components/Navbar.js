@@ -1,38 +1,63 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { logoutUser } from '../actions/authentication';
+import { withRouter } from 'react-router-dom';
 
 class Navbar extends Component {
-  constructor(props){
-    super(props);
-    this.navbarStyle = {
-      backgroundColor: '#1f1651'
+
+    onLogout(e){
+        e.preventDefault();
+        this.props.logoutUser(this.props.history);
     }
 
-    this.textStyle = {
-      color:'#ffffff'
+    render(){
+        const textStyle = {
+            color:"#ffffff", 
+            "font-weight": "bold"
+        }
+        const {isAuthenticated, user} = this.props.auth;
+        const authLinks = (
+            <ul className="navbar-nav ml-auto">
+                <a href="#" className="nav-link" onClick={this.onLogout.bind(this)}>
+                    <img src={user.avatar} alt={user.name} title={user.name}
+                        className="rounded-circle"
+                        style={{ width: '25px', marginRight: '5px'}} />
+                            Logout
+                </a>
+            </ul> 
+        )
+        
+        const guestLinks = (
+            <ul className="navbar-nav ml-auto">
+                <li className="nav-item">
+                    <Link className="nav-link" to="/register" style={textStyle}>Sign Up</Link>
+                </li>
+                <li className="nav-item">
+                    <Link className="nav-link" to="/login" style={textStyle}>Sign In</Link>
+                </li>
+            </ul>
+        )
+        
+        return(
+            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+                <Link className="navbar-brand" to="/">TensorMusic</Link>
+                <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                    {isAuthenticated ? authLinks : guestLinks}
+                </div>
+            </nav>
+        )
     }
-  }
-
-  render() {
-    return(
-        <nav className="navbar navbar-expand-lg navbar-light " style={this.navbarStyle}>
-            <Link className="navbar-brand" to="/" style={this.textStyle}>TensorMusic</Link>
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul className="navbar-nav ml-auto" >
-                    <li className="nav-item" >
-                        <Link className="nav-link" to="/register" style={this.textStyle}>Register</Link>
-                    </li>
-                    <li className="nav-item" >
-                        <Link className="nav-link" to="/login" style={this.textStyle}>Login</Link>
-                    </li>
-                    <li className="nav-item" >
-                        <Link className="nav-link" to="/" style={this.textStyle}>Home</Link>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    )
-}    
-
 }
-export default Navbar;
+
+Navbar.propTypes = {
+    logoutUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state) => ({
+    auth: state.auth
+})
+
+export default connect(mapStateToProps, { logoutUser })(withRouter(Navbar));

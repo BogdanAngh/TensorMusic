@@ -5,8 +5,8 @@ const passport   = require('passport');
 
 const keys     = require('./config/keys');
 const users    = require('./routes/authRoute');
-
 const app = express();
+
 
 app.use(passport.initialize());
 require('./services/passport')(passport);
