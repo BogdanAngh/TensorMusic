@@ -15,7 +15,7 @@ class Navbar extends Component {
     render(){
         const textStyle = {
             color:"#ffffff", 
-            "font-weight": "bold"
+            fontSize:"20px"
         }
         const {isAuthenticated, user} = this.props.auth;
         const authLinks = (
@@ -32,17 +32,23 @@ class Navbar extends Component {
         const guestLinks = (
             <ul className="navbar-nav ml-auto">
                 <li className="nav-item">
-                    <Link className="nav-link" to="/register" style={textStyle}>Sign Up</Link>
+                    <Link className="nav-link" to="/register" style={textStyle}>
+                        <p>Register</p>
+                    </Link>
                 </li>
                 <li className="nav-item">
-                    <Link className="nav-link" to="/login" style={textStyle}>Sign In</Link>
+                    <Link className="nav-link" to="/login" style={textStyle}>
+                        <p>Login</p>
+                    </Link>
                 </li>
             </ul>
         )
         
         return(
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                <Link className="navbar-brand" to="/">TensorMusic</Link>
+            <nav className="navbar navbar-expand-lg navbar-dark ">
+                <Link className="navbar-brand" to="/">
+                    <p style={{fontSize:"30px"}}>Home</p>
+                </Link>
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     {isAuthenticated ? authLinks : guestLinks}
                 </div>
