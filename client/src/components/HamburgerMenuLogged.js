@@ -44,7 +44,7 @@ class HamburgerMenuLogged extends React.Component {
                 <Link className="nav-link" to="/login" style={this.linkStyle}>Make Metal</Link>
             </MenuItem>
             <MenuItem onClick={this.handleClose}>
-                <Link className="nav-link" to="/home" style={this.linkStyle}>Home</Link>
+                <Link className="nav-link" to="/rocknroll" style={this.linkStyle}>Home</Link>
             </MenuItem>
         </Menu>
       </div>
