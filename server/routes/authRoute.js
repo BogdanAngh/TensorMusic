@@ -62,7 +62,7 @@ router.post('/login', (req, res) => {
     const { errors, isValid } = validateLoginInput (req.body);
     
     if(!isValid){ // user input is not valid => return error object
-        return res.status(400).json(errors);
+        return res.status(400).json("errors");
     }
 
     // user input is valid for certain

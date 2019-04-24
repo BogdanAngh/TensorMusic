@@ -1,6 +1,7 @@
 const mongoose = require ('mongoose');
 
 const { Schema } = mongoose; // get mongoose.Schema obj
+const Song = mongoose.model('songs')
 
 const userSchema = new Schema({
     name: {
@@ -21,7 +22,9 @@ const userSchema = new Schema({
     date: {
         type: Date,
         default: (Date.now() + 72000000)
-    }
+    },
+    library: [ Song.schema ]
+
 });
 
 const User = mongoose.model('users', userSchema);
