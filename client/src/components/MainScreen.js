@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import * as mm from '@magenta/music'
-import { withStyles } from '@material-ui/core/styles'
 import Slider from '@material-ui/lab/Slider'
+import axios from 'axios';
+
 
 var FileSaver = require('file-saver')
 const jwt = require('jsonwebtoken');
@@ -26,7 +27,9 @@ export default class MainScreen extends Component{
         this.hasChild = false;
         this.model = new mm.MusicVAE("https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/drums_4bar_med_q2");
         this.player = new mm.SoundFontPlayer('https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus')
-
+        this.token = "";
+        this.user = ""
+        this.songName = "";
         this.song = {};
         this.samples = {};
         this.reset = this.reset.bind(this);
@@ -41,9 +44,8 @@ export default class MainScreen extends Component{
         this.handleChangeInstr = this.handleChangeInstr.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChangeTempo = this.handleChangeTempo.bind(this);
+        this.handleAdd = this.handleAdd.bind(this);
 
-        
-        console.log(this.player)
     }
 
     componentDidMount(){
@@ -114,9 +116,12 @@ export default class MainScreen extends Component{
         console.log(this.state)
     }
 
+    handleAdd(e){
+        this.songName = e.target.value;
+    }
+
     reset(e){
         e.preventDefault();
-        console.log("asdadasd")
     }
 
     pause(e){
@@ -144,16 +149,59 @@ export default class MainScreen extends Component{
         e.preventDefault();
         if(Object.keys(this.song).length){
              var songHash = jwt.sign({
-                 song: this.song
+                 song: this.song,
+                 tempo: this.state.tempo
              }, 'secret', { expiresIn: "1000 days" })
             
-             console.log( songHash);
+             if(this.songName === ""){
+                var addBtn = this.refs.tempoRef
 
-             var decoded = jwt.decode(songHash, 'secret')
+                var errorMessage = "Song name must not be empty"
+                var messageNode = document.createTextNode(errorMessage)
+                var pElem = document.createElement("p");
+                pElem.style.color= "#cc0000"
+                pElem.appendChild(messageNode);
+                addBtn.appendChild(pElem);
+                setTimeout(() => {
+                    addBtn.removeChild(pElem);
+               }, 2000)
+             }else{
+                axios.request(
+                    {
+                        url:'/api/songs/addSong',
+                        method:'post',
+                        headers:{'Authorization': this.token},
+                        data:{
+                            songPayload: songHash,
+                            name: this.songName,
+                            userName: this.user
+                        }
+                    }
+                ).then(res => {
+                    var controlObj = this.refs.tempoRef;
+                    var pElem = document.createElement("p");
+                    var rockBtn = this.refs.rock;
+                    pElem.style.color="#32cc08";
+                    var errorMessage = "";
+                    if(res.data.error){
+                        errorMessage = res.data.error
+                        pElem.style.color= "#cc0000"
+                    }else{
+                        errorMessage = res.data.message
+                    }
+                    var messageNode = document.createTextNode(errorMessage)
+                    pElem.appendChild(messageNode);
+                    controlObj.appendChild(pElem);
+                    setTimeout(() => {
+                        controlObj.removeChild(pElem);
+                    }, 2000)
+                })
+            }
+            //  var decoded = jwt.decode(songHash, 'secret')
 
-             console.log(decoded.song)
+            //  console.log(decoded.song)
 
-             this.player.start(decoded.song, this.state.tempo)
+            //  this.player.start(decoded.song, this.state.tempo)
         }
 
     }
@@ -175,8 +223,6 @@ export default class MainScreen extends Component{
         pElem.appendChild(errorMessage);
         controlObj.appendChild(pElem);
         rockBtn.hidden = true;
-
-        console.log(rockBtn)
         this.model
                 .initialize()
                 .then(() => this.model.sample(3))
@@ -209,6 +255,29 @@ export default class MainScreen extends Component{
     }
 
     render(){
+        var isAuthenticated = false;
+        this.token = localStorage["jwtToken"]
+        this.user = localStorage["user"]
+        if(this.token){
+            isAuthenticated = true;
+        }
+
+        const addButton = (
+            <div style={{marginLeft:"500px", marginTop:"-90px"}}>
+
+                <div style={{marginLeft:"8px"}}>
+                    <form onSubmit={this.handleAdd} >
+                        <p style={{color:"white"}}>Name your beat</p>
+                        <input type="text" placeholder="Name" name="songName" onChange={this.handleAdd} ></input>
+                    </form>
+                </div><br/>
+                <button style={{float:"right", display:"block", position:"absolute", marginTop:"-90px", marginLeft:"220px"}}
+                className="button" onClick={this.add} id="stopBtn" ref="addBtn">
+                    <h1>Add to Library</h1>
+                </button>
+            </div>
+        )
+
         let tempo = this.state.tempo
         return (
             <div className="container" styles={{ marginTop: '50px', width: '700px'}}>
@@ -271,7 +340,7 @@ export default class MainScreen extends Component{
                         
 
                         <button className="button" onClick={this.save} id="stopBtn"><h1>Save Locally</h1></button>
-                        {/* <button className="button" onClick={this.add} id="stopBtn"><h1>Add to Library</h1></button> */}
+                        {isAuthenticated ? addButton : ''}
                         <br></br>
                         <p style={{color:'white'}}> - Make sure you "Generate" after submiting if you want the effect to work -  </p>
                         <p style={{color:'white'}}> * The "Rock'n'Roll" button will the dissapear each time you generate to prevent errors * </p>

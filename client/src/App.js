@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './store';
 import jwt_decode from 'jwt-decode';
@@ -9,10 +9,10 @@ import { setCurrentUser, logoutUser } from './actions/authentication';
 import Navbar from './components/Navbar';
 import Register from './components/Register';
 import Login from './components/Login';
-import Home from './components/Home';
+import ProfileScreen from './components/ProfileScreen';
 import MainScreen from './components/MainScreen'
 import WelcomeScreen from './components/WelcomeScreen'
-
+import YouLost from './components/YouLost'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 if(localStorage.jwtToken){
@@ -34,12 +34,18 @@ class App extends Component {
         <Router>
             <div>
               <Navbar />
+              <Switch>
               <Route exact path="/" component={ WelcomeScreen } />
-              <div className="container">
+              
                 <Route exact path="/register"     component={ Register }/>
                 <Route exact path="/login"        component={ Login } />
                 <Route exact path="/rocknroll"    component={ MainScreen } />
-              </div> 
+                <Route exact path="/profile"      component={ ProfileScreen} />
+                
+              
+              <Route component={ YouLost }/>
+              </Switch>
+              
             </div>
         </Router>
       </Provider>

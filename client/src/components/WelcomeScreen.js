@@ -26,8 +26,8 @@ class WelcomeScreen extends Component{
                         <p>
                         This is a simple app that let's you generate your own drum and piano beats and also have <b>fun</b> while you're doing it.
                         <br/>
-                        On top of that, you have the option the generate random musical bits made of different instruments. The possibilities
-                        are countless, you just have to experiment.
+                        On top of that, you have the option to generate random musical bits made of different instruments. The possibilities
+                        are endless, you just have to experiment.
                         </p>
                         <p>
                         Also, you can save your marvelous creations locally or on the server, so you can impress your friends.<br/>
